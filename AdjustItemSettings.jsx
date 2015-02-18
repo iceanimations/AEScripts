@@ -79,10 +79,10 @@ function applySettingsToItems(items, settings, itemTypes) {
     for (i=1; i<=items.length;i++) {
         item = items[i];
         type = item.typeName;
-        for (it in itemTypes) {
+        for (var it in itemTypes) {
             itemType=itemTypes[it];
             if (type == itemType) {
-                for (x in settings) {
+                for (var x in settings) {
                     try {
                         if (!exceptionalSetting(item, x, settings[x], itemType) && x in item) {
                             item[x]=settings[x];
@@ -102,40 +102,40 @@ function applySettingsToItems(items, settings, itemTypes) {
 }
 
 function settingGroupsUI(panel) {
-    panel.grps = []
-    for ( s in gui_settings ) {
+    panel.grps = [];
+    for (var s in gui_settings ) {
         grp = panel.add('group');
         grp.check = grp.add('checkbox', undefined, gui_settings[s].name);
         grp.check.helpTip = s;
         grp.check.value = gui_settings[s].enabled;
         grp.s = s;
         grp.gs = gui_settings[s];
-        panel.grps.push(grp)
+        panel.grps.push(grp);
 
         if (grp.gs.type == 'dropdownlist') {
             grp.ddl = grp.add('dropdownlist', undefined, 'value');
-            for (val in grp.gs.vals) {
-                grp.ddl.add('item', val)
+            for (var val in grp.gs.vals) {
+                grp.ddl.add('item', val);
             }
-            grp.ddl.selection = grp.gs.dv
+            grp.ddl.selection = grp.gs.dv;
             grp.check.onClick = function() {
-                this.parent.children[1].visible=this.value
-            }
+                this.parent.children[1].visible=this.value;
+            };
         }
 
         else if (grp.gs.type == 'slider') {
-            grp.stsldr = grp.add('statictext', undefined, grp.gs.dv)
+            grp.stsldr = grp.add('statictext', undefined, grp.gs.dv);
             grp.sldr = grp.add('slider', undefined,
                     grp.gs.dv,
                     grp.gs.min,
-                    grp.gs.max)
+                    grp.gs.max);
             grp.sldr.onChanging = function() {
                 this.parent.stsldr.text=this.value;
-            }
+            };
             grp.check.onClick = function() {
                 this.parent.sldr.visible=this.value;
                 this.parent.stsldr.visible=this.value;
-            }
+            };
         }
     }
 }
@@ -147,7 +147,7 @@ function doApply() {
         if (dlg.compCheck.value) applyTo.push('Composition');
         if (dlg.footageCheck.value) applyTo.push('Footage');
         settings = {};
-        for (i in dlg.settingsPanel.grps) {
+        for (var i in dlg.settingsPanel.grps) {
             grp = dlg.settingsPanel.grps[i];
             key = grp.s;
             val = 0;
@@ -178,10 +178,10 @@ function applySettingsUI() {
     btnGrp = dlg.add('group');
     applyBtn = btnGrp.add('button', undefined, 'Apply');
     cancelBtn = btnGrp.add('button', undefined, 'Cancel');
-    applyBtn.onClick = doApply
+    applyBtn.onClick = doApply;
 
     dlg.center();
     return dlg.show();
 }
-applySettingsUI()
+applySettingsUI();
 
