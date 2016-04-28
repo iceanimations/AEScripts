@@ -1,4 +1,4 @@
-﻿    var top_seq_folder  = 'SEQUENCES';
+﻿var top_seq_folder  = 'SEQUENCES';
 var top_sh_folder = 'SHOTS';
 var animatic_folder = 'animatic';
 
@@ -82,6 +82,21 @@ var Episode = function(folder) {
         var topFolder = this.getTopSequencesFolder();
         return getChildren(topFolder, Sequence);
     };
+    this.importAnimatic = function(rootFolder) {
+        var items = app.project.items;
+        if (rootFolder === undefined){
+            rootFolder = app.project.rootFolder;
+        }
+        var epFolder = items.addFolder(this.name());
+        epFolder.parentFolder = rootFolder;
+        var sequences = this.getSequences();
+        for (var s in sequences) {
+            var seq = sequences[s];
+            seq.importAnimatic(epFolder);
+
+        }
+        return epFolder;
+    };
 };
 Episode.isValid = Episode.prototype.isValid = function(folder) {
     return checkValidity(this, folder, top_seq_folder);
@@ -101,6 +116,20 @@ var Sequence = function(folder) {
         var topFolder = this.getTopShotsFolder();
         return getChildren(topFolder, Shot);
     };
+    this.importAnimatic = function(rootFolder) {
+        var items = app.project.items;
+        if (rootFolder === undefined){
+            rootFolder = app.project.rootFolder;
+        }
+        var seqFolder = items.addFolder(this.name());
+        seqFolder.parentFolder = rootFolder;
+        var shots = this.getShots();
+        for (var s in shots) {
+            var shot = shots[s];
+            shot.importAnimatic(seqFolder);
+        }
+        return seqFolder;
+    };
 };
 Sequence.isValid = Sequence.prototype.isValid = function(folder) {
     return checkValidity(this, folder, top_sh_folder, Sequence.regexp);
@@ -114,14 +143,32 @@ var Shot = function(folder){
         if (Sequence.isValid(this.folder.parent.parent))
             return new Sequence(this.folder.parent.parent);
     };
-    this.getAnimaticsFolder = function() {
+    this.getAnimaticFolder = function() {
         return getSubFolder(this.folder, animatic_folder);
     };
     this.getAnimatic = function() {
-        var animaticFolder = this.getAnimaticsFolder();
+        var animaticFolder = this.getAnimaticFolder();
         var files = animaticFolder.getFiles('*.jpg');
         if (files)
             return files[0];
+    };
+    this.importAnimatic = function(rootFolder) {
+        var items = app.project.items;
+        if (rootFolder === undefined){
+            rootFolder = app.project.rootFolder;
+        }
+        shFolder = items.addFolder(this.name());
+        shFolder.parentFolder = rootFolder;
+        var animatic = this.getAnimatic();
+
+        if (animatic) {
+            var options = new ImportOptions(animatic);
+            options.importAs = ImportAsType.FOOTAGE;
+            options.sequence = true;
+            var foot = app.project.importFile(options);
+            foot.parentFolder = shFolder;
+        }
+        return shFolder;
     };
 };
 Shot.isValid = Shot.prototype.isValid = function(folder) {
@@ -138,39 +185,17 @@ var detectElement = function(folder) {
         return new Shot(folder);
 };
 
-var testElements = function () {
-    var path = Folder('/P/external/Al_Mansour_Season_03/Edit/Episode_001/animatics/EP001');
-    var parentFolder = app.project.rootFolder;
-    var items = app.project.items;
-    if ( Episode.isValid(path) ) {
-        var episode = detectElement(path);
-        var epItem = items.addFolder(episode.name());
-        epItem.parentFolder = parentFolder;
-        var seqs = episode.getSequences();
-        for (var s in seqs) {
-            var sequence = seqs[s];
-            var sqItem = items.addFolder(sequence.name());
-            sqItem.parentFolder = epItem;
-            var shots = sequence.getShots();
-            for (var sh in shots){
-                shot = shots[sh];
-                var shItem = items.addFolder(shots[sh].name());
-                shItem.parentFolder = sqItem;
-                $.writeln(shots[sh].name());
-                var options = new ImportOptions(shot.getAnimatic());
-                options.importAs = ImportAsType.FOOTAGE;
-                var foot = app.project.importFile(options);
-                foot.parentFolder = shItem;
-            }
-        }
+var importEpisodeAnimatics = function(path) {
+    if (path === undefined) {
+        path = Folder.selectDialog('Select Episode or Sequence Location');
     }
+    var elem = detectElement(path);
+    if (elem ===  undefined) {
+        alert();
+    }
+    elem.importAnimatic();
 };
 
-//var path = Folder.selectDialog ('select episode location');
-//
-testElements();
-
-var importAnimaticFromEpisode = function() {
-
-};
+var path = Folder('/P/external/Al_Mansour_Season_03/Edit/Episode_001/animatics/EP001');
+importEpisodeAnimatics(path);
 
