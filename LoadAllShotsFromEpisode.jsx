@@ -1,6 +1,19 @@
-﻿var top_seq_folder  = 'SEQUENCES';
+﻿////////////////////////////////////////////////////////////////////////
+//                    Production Elements Library                     //
+////////////////////////////////////////////////////////////////////////
+
+////////////////////////
+//  global constants  //
+////////////////////////
+
+
+var top_seq_folder  = 'SEQUENCES';
 var top_sh_folder = 'SHOTS';
 var animatic_folder = 'animatic';
+
+/////////////////////////
+//  utility functions  //
+/////////////////////////
 
 var elementConstructor = function (obj, folder) {
     if (!folder instanceof Folder ){
@@ -71,6 +84,10 @@ var getChildren = function(topFolder, type) {
     }
     return sequences;
 };
+
+//////////////////////////////////
+//  Production Element Objects  //
+//////////////////////////////////
 
 var Episode = function(folder) {
     this.type = 'Episode';
@@ -185,6 +202,15 @@ var detectElement = function(folder) {
         return new Shot(folder);
 };
 
+////////////////////////////////////////////////////////////////////////
+//                  End Production Elements Library                   //
+////////////////////////////////////////////////////////////////////////
+
+
+////////////////////////////////////////////////////////////////////////
+//                           main functions                           //
+////////////////////////////////////////////////////////////////////////
+
 var importEpisodeAnimatics = function(path) {
     if (path === undefined) {
         path = Folder.selectDialog('Select Episode or Sequence Location');
@@ -196,6 +222,7 @@ var importEpisodeAnimatics = function(path) {
     elem.importAnimatic();
 };
 
-var path = Folder('/P/external/Al_Mansour_Season_03/Edit/Episode_001/animatics/EP001');
+//var path = Folder('/P/external/Al_Mansour_Season_03/Edit/Episode_001/animatics/EP001');
 importEpisodeAnimatics(path);
+
 
