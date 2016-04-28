@@ -48,16 +48,18 @@ var checkValidity = function (obj, folder, subfolder_name, regexp) {
         }
     }
 
-    if ( _folder.exists) {
-        subfolder = false;
-        var files = _folder.getFiles();
-        for ( var i in files ){
-            item = files[i];
-            if (item instanceof Folder && item.name == subfolder_name)
-                subfolder = true;
+    if (subfolder_name !== undefined) {
+        if ( _folder.exists) {
+            subfolder = false;
+            var files = _folder.getFiles();
+            for ( var i in files ){
+                item = files[i];
+                if (item instanceof Folder && item.name == subfolder_name)
+                    subfolder = true;
+            }
+            if (!subfolder)
+                return false;
         }
-        if (!subfolder)
-            return false;
     }
     return true;
 };
@@ -193,6 +195,10 @@ Shot.isValid = Shot.prototype.isValid = function(folder) {
 };
 Shot.regexp = Shot.prototype.regexp = new RegExp('^SQ\\d{3}_SH\\d{3}$');
 
+///////////////
+//  factory  //
+///////////////
+
 var detectElement = function(folder) {
     if ( Episode.isValid(folder) )
         return new Episode(folder);
@@ -222,7 +228,6 @@ var importEpisodeAnimatics = function(path) {
     elem.importAnimatic();
 };
 
-//var path = Folder('/P/external/Al_Mansour_Season_03/Edit/Episode_001/animatics/EP001');
-importEpisodeAnimatics(path);
-
+var path = Folder('/P/external/Al_Mansour_Season_03/Edit/Episode_001/animatics/EP001');
+importEpisodeAnimatics();
 
